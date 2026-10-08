@@ -10,37 +10,36 @@ Green spaces improve both the environmental and social conditions of cities. Air
 
 We extracted raw data from multiple open sources—ranging from WorldPop demographic estimates to NASA MODIS satellite data and Central Pollution Control Board (CPCB) monitoring stations. We processed them by upsampling to a high enough resolution (250m) that makes the dashboard highly usable by city planners. The resolution itself is a parameter, with distance-weighted k-nearest neighbours (KNN) and vectorized spatial joins enabling high-performance processing across the city grid.
 
-The final dashboard aggregates the underlying data into a **Priority Score** that summarizes where potential greenspaces would most benefit the urban conditions of Delhi. 
+The final dashboard aggregates the underlying data into a **Priority Score** that summarizes where potential greenspaces would most benefit the urban conditions of Delhi. The below image illustrates the dashboard priority score:
+
+<div align="center">
+  <img src="Dashboard_Images/Priority_Score.png" alt="Priority Score Map" width="100%">
+</div>
 
 The calculation of the score considers multiple weighted components:
 - **Population Need (0.25):** Based on WorldPop India 2024 raster aggregations.
+<div align="center">
+  <img src="Dashboard_Images/Population_Density.png" alt="Population Density" width="100%">
+</div>
 - **Greenspace Deficit (0.20):** Based on existing parks from OpenStreetMap (OSM) and ESA WorldCover.
 - **Heat Stress (0.20):** Derived from MODIS Summer Mean Land Surface Temperature.
-- **Air Pollution (0.15):** Interpolated from real-time CPCB ground stations (PM2.5, PM10, NO2).
+- **Air Pollution (0.15):** Interpolated from real-time CPCB ground stations (PM2.5, PM10, NO2). The below images of the dashboard air quality scores clearly reflect worse air quality concentrations around the dense centre of Delhi:
+
+<div align="center">
+  <img src="Dashboard_Images/Air_Quality_Score.png" alt="Air Quality Map" width="100%">
+</div>
+<br>
+<div align="center">
+  <img src="Dashboard_Images/PM25.png" alt="PM2.5 Map" width="48%">
+  <img src="Dashboard_Images/NO2.png" alt="NO2 Map" width="48%">
+</div>
+
 - **Accessibility Deficit (0.10):** Distance to nearest roads.
 - **Building Density (0.10):** Google Open Buildings V3 footprint fractions.
 
 A cornerstone of our project was using optimized K-Nearest Neighbour models and Vector Intersections (via Geopandas) to project all datasets onto a single 2D grid. We handled spherical distances using the Haversine formula facilitated by SKLearn, mapping complex geographical data perfectly to the coordinates of Delhi.
 
 Using OpenStreetMap features, we were able to filter land feasibility—ensuring we do not recommend building a park on top of a hospital or an airport, or inside an existing water body.
-
-## Dashboard Screenshots
-
-### 🏆 Priority Score Map (Delhi)
-![Priority Score Map](Dashboard_Images/Priority_Score.png)
-
-### 📊 Air Quality Score
-![Air Quality Map](Dashboard_Images/Air_Quality_Score.png)
-
-### 📊 Population Density
-![Population Density](Dashboard_Images/Population_Density.png)
-
-### 📊 PM2.5 Concentration
-![PM2.5 Map](Dashboard_Images/PM25.png)
-
-### 📊 NO2 Concentration
-![NO2 Map](Dashboard_Images/NO2.png)
-
 
 ## UN Sustainable Development Goals
 We meet the following UN Sustainable Development Goals:
