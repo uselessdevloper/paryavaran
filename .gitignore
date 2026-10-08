@@ -1,0 +1,23 @@
+#Spikes/.ipynb_checkpoints/*
+Pickles/__pycache__
+__pycache__
+.DS_Store
+.env
+
+# Downloaded datasets (large files — do not commit)
+Data/*.tif
+Data/*.gpkg
+Data/*.pbf
+Data/*.shp
+Data/*.dbf
+Data/*.prj
+Data/*.shx
+
+# Generated CSVs (regenerate via pipeline)
+final_df.csv
+penultimate_df.csv
+land_type_025.csv
+points_df_025.csv
+
+# London/UK legacy pickles — do not reuse
+Pickles/*.pkl
