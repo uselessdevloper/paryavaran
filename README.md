@@ -1,140 +1,28 @@
-# Paryavaran — Urban Greenspace Suitability Dashboard
-### Delhi NCT, India
+# Paryavaran — Urban Greenspace Suitability Dashboard (Delhi, India)
 
-> Adapted from the Kainos ASDI Hackathon project.  
-> Replaces all UK/Ordnance Survey dependencies with Indian open-data sources.
+## Inspiration
+Living in cities, we appreciate the importance of green space in our areas, especially as rapid urbanization continues. However, since neither of us are city planners or subject matter experts, we thought it would be most valuable to develop a flexible tool. That way a city planner can integrate other relevant datasets and keep it updated with recent readings to dynamically plan green infrastructure where it's needed most.
 
----
+## Overview
+"Today, 56% of the world's population - 4.4 billion inhabitants - live in cities. This trend is expected to continue. By 2050, with the urban population more than doubling its current size, nearly 7 of 10 people in the world will live in cities." - The World Bank
 
-## What it does
+Green spaces improve both the environmental and social conditions of cities. Air quality, population satisfaction, urban temperatures, biodiversity, flood risk reduction, noise abatement - these are among the major benefits of greenspaces in an urban area. We decided to target **Delhi (NCT)**, one of the most densely populated and polluted metropolitan areas in the world, to see how open data can inform the locations for green spaces that would maximize their positive effects on these urban conditions.
 
-Identifies high-priority zones for new urban greenspaces in Delhi NCT by combining:
+We extracted raw data from multiple open sources—ranging from WorldPop demographic estimates to NASA MODIS satellite data and Central Pollution Control Board (CPCB) monitoring stations. We processed them by upsampling to a high enough resolution (250m) that makes the dashboard highly usable by city planners. The resolution itself is a parameter, with distance-weighted k-nearest neighbours (KNN) and vectorized spatial joins enabling high-performance processing across the city grid.
 
-| Signal | Source | Method |
-|--------|--------|--------|
-| **Population need** | WorldPop India 2024 (100 m) | Raster aggregation → 250 m grid |
-| **Air pollution** | CPCB monitoring stations (data.gov.in) | Distance-weighted KNN |
-| **Land cover** | ESA WorldCover 2021 (10 m) | Zonal statistics |
-| **Heat stress** | MODIS MOD11A2 summer mean LST | Raster aggregation |
-| **Parks / roads / POIs** | OpenStreetMap (Geofabrik India) | Vector intersection |
-| **Building density** | Google Open Buildings V3 | Footprint fraction per cell |
+The final dashboard aggregates the underlying data into a **Priority Score** that summarizes where potential greenspaces would most benefit the urban conditions of Delhi. 
 
-**Priority score formula:**
-```
-Priority = (
-    0.25 × Population Need
-  + 0.20 × Greenspace Deficit
-  + 0.20 × Heat Stress
-  + 0.15 × Air Pollution
-  + 0.10 × Accessibility Deficit
-  + 0.10 × Building Density
-) × Land Feasibility Multiplier
-```
+The calculation of the score considers multiple weighted components:
+- **Population Need (0.25):** Based on WorldPop India 2024 raster aggregations.
+- **Greenspace Deficit (0.20):** Based on existing parks from OpenStreetMap (OSM) and ESA WorldCover.
+- **Heat Stress (0.20):** Derived from MODIS Summer Mean Land Surface Temperature.
+- **Air Pollution (0.15):** Interpolated from real-time CPCB ground stations (PM2.5, PM10, NO2).
+- **Accessibility Deficit (0.10):** Distance to nearest roads.
+- **Building Density (0.10):** Google Open Buildings V3 footprint fractions.
 
----
+A cornerstone of our project was using optimized K-Nearest Neighbour models and Vector Intersections (via Geopandas) to project all datasets onto a single 2D grid. We handled spherical distances using the Haversine formula facilitated by SKLearn, mapping complex geographical data perfectly to the coordinates of Delhi.
 
-## Data pipeline
-
-```
-Scripts/build_land_type_csv.py
-        ↓
-land_type_025.csv  (250 m grid + all feature columns)
-        ↓
-Notebooks/create_penultimate_df.ipynb  →  penultimate_df.csv
-        ↓
-Notebooks/create_final_df.ipynb        →  final_df.csv
-        ↓
-Plotly_Dash_App/app.py                 →  http://127.0.0.1:8050
-```
-
----
-
-## Project structure
-
-```
-Paryavaran/
-├── helpers.py                    ← Core feature engineering + scoring
-├── Enums/
-│   └── land_type.py              ← India-specific land type enum
-├── Notebooks/
-│   ├── create_penultimate_df.ipynb
-│   └── create_final_df.ipynb
-├── Scripts/
-│   └── build_land_type_csv.py    ← Pre-processing: grid + rasters + OSM
-├── Plotly_Dash_App/
-│   └── app.py                    ← Dash dashboard (centred on Delhi)
-├── Dashboard_Images/             ← Screenshots of the Delhi dashboard
-│   ├── Priority_Score_Delhi.jpg
-│   └── Air_Quality_Delhi.jpg
-├── Data/                         ← Downloaded datasets go here (gitignored)
-│   ├── worldpop_india_2024_100m.tif
-│   ├── worldcover_delhi.tif
-│   ├── modis_lst_summer_mean.tif
-│   ├── open_buildings_delhi.gpkg
-│   └── cpcb_stations.csv
-├── points_df_025.csv             ← Generated 250 m Delhi grid
-├── land_type_025.csv             ← Generated feature grid
-├── penultimate_df.csv            ← Generated intermediate features
-├── final_df.csv                  ← Generated final scored dataset
-├── requirements.txt
-└── .env_template
-```
-
----
-
-## Setup
-
-### 1. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-Key additions over the original Kainos requirements:
-- `rasterio`, `rasterstats` — read/aggregate GeoTIFF rasters
-- `osmnx` — download OpenStreetMap features
-- `geopandas`, `pyproj`, `fiona` — vector GIS
-- `scipy` — spatial interpolation
-
-### 2. Download datasets
-
-Create a `Data/` directory and download the following:
-
-| File | Source | Notes |
-|------|--------|-------|
-| `worldpop_india_2024_100m.tif` | [WorldPop India 2024](https://hub.worldpop.org/geodata/summary?id=50771) | Clip to Delhi bbox |
-| `worldcover_delhi.tif` | [ESA WorldCover](https://esa-worldcover.org/en/data-access) | 10 m; tile N28E077 |
-| `modis_lst_summer_mean.tif` | [NASA LP DAAC MOD11A2](https://lpdaac.usgs.gov/) | Summer (Apr–Jun) mean; ~1 km |
-| `open_buildings_delhi.gpkg` | [Google Open Buildings](https://sites.research.google/gr/open-buildings/) | Filter to Delhi bbox |
-| `cpcb_stations.csv` | [data.gov.in CPCB AQI](https://www.data.gov.in/catalog/real-time-air-quality-index) | Columns: Latitude, Longitude, PM25, PM10, NO2 |
-
-OSM data is downloaded automatically via `osmnx` during `build_land_type_csv.py`.
-
-**Delhi NCT approximate bounding box:**
-```
-Bottom-left (SW): 28.40°N, 76.84°E
-Top-right   (NE): 28.88°N, 77.35°E
-```
-
-### 3. Run the pipeline
-
-```bash
-# Step 1 – build grid and feature CSV
-python Scripts/build_land_type_csv.py
-
-# Step 2 – generate penultimate_df.csv
-jupyter nbconvert --to notebook --execute Notebooks/create_penultimate_df.ipynb
-
-# Step 3 – generate final_df.csv
-jupyter nbconvert --to notebook --execute Notebooks/create_final_df.ipynb
-
-# Step 4 – launch dashboard
-cd Plotly_Dash_App
-python app.py
-# → open http://127.0.0.1:8050
-```
-
----
+Using OpenStreetMap features, we were able to filter land feasibility—ensuring we do not recommend building a park on top of a hospital or an airport, or inside an existing water body.
 
 ## Dashboard Screenshots
 
@@ -153,47 +41,73 @@ python app.py
 ### 📊 NO2 Concentration
 ![NO2 Map](Dashboard_Images/NO2.png)
 
----
 
-## Dashboard overlays
+## UN Sustainable Development Goals
+We meet the following UN Sustainable Development Goals:
+- **Good health and Well-Being:** Green spaces protect the local populace from toxic gases and high urban temperatures but also provide a mental benefit by being a place of community.
+- **Reduced inequalities:** Considering the wide-ranging benefits of green spaces to people's health, our dashboard helps solve 'greenspace inequality'.
+- **Sustainable Cities and Communities:** Green spaces help cultivate communities in cities by providing a space for activities.
+- **Climate Action:** Green spaces contribute to the absorption of greenhouse gases and reduced surface temperatures (Urban Heat Island effect).
+- **Life on Land:** Green spaces in urban metropolises protect biodiversity by allowing space for ecosystems to thrive.
+- **Partnerships for the Goals:** Given the wide-ranging data employed (ESA, NASA, CPCB, Google), maintaining this requires a coalition of parties.
 
-| Overlay | Description |
-|---------|-------------|
-| 🏆 Priority Score | Combined suitability score (higher = more suitable) |
-| 📊 Air Quality Score | Normalised CPCB PM2.5/PM10/NO2 composite |
-| 📊 Population Density | WorldPop 250 m aggregated count |
-| 📊 PM2.5 / PM10 / NO₂ | Raw CPCB pollutant concentrations |
-| 📊 Heat Stress (LST K) | MODIS summer land-surface temperature |
-| 📊 Building Density | Google Open Buildings footprint fraction |
-| 📊 Distance to Nearest Green Space | Haversine km to nearest 3 OSM parks |
-| 🗺️ Existing Green Spaces | OSM parks/forests + WorldCover tree/grass |
-| 🗺️ Water Bodies / Wetlands | WorldCover + OSM water |
-| 🗺️ Airports / Railway / Roads | OSM infrastructure constraints |
-| 🗺️ Hospitals / Schools | OSM POI vulnerability layers |
-| 🗺️ Bare Land / Cropland | WorldCover candidate land |
+## Future Work
+Besides obviously expanding the datasets and getting true domain experts to refine the greenspace calculation, we see an expansion of scope of this project to envelope other major cities of the world, like Mumbai or Bangalore. Once this is achieved, further aggregated analysis can be provided on the dashboard such as relative metrics to compare cities.
 
----
+Our resolution of 250m is a parameter. The vectorized processing pipeline facilitates any resolution, however, ideally, one would prefer to add higher resolution data to begin with so that predictions do not deviate from reality.
 
-## Key differences from original Kainos project
+We have demonstrated our dashboard via Plotly Dash, which suited our needs for a Minimum Viable Product, but given more time, we would implement our dashboard in a more scalable cloud infrastructure environment to handle global datasets without bottlenecking.
 
-| Component | Original (London/UK) | This version (Delhi/India) |
-|-----------|---------------------|----------------------------------|
-| Population | KNN pickle model | WorldPop 100 m raster aggregation |
-| Air quality | Sentinel-5P satellite KNN pickles | CPCB station KNN (PM2.5, PM10, NO2) |
-| Land type | Ordnance Survey WFS API | ESA WorldCover + OSM (no API key needed) |
-| Heat | — | MODIS MOD11A2 LST |
-| Buildings | OS Zoomstack | Google Open Buildings V3 |
-| Grid centre | London 51.50°N, 0.13°E | Delhi NCT 28.61°N, 77.21°E |
-| Priority score | AQ + pop + distance × OS penalties | India 6-component weighted formula |
-| API keys required | 5 OS Data Hub keys | None (all open data) |
+## How we built it
+We started off by scanning through the datasets suitable for India and Delhi specifically. We narrowed it down to CPCB Air Quality data, ESA WorldCover, MODIS Heat data, Google Open Buildings, and WorldPop. 
 
----
+We used Python libraries (`geopandas`, `scipy`, `sklearn`, `rasterio`) for EDA, data preprocessing, visualization, and model building. We built optimized Python scripts that automate the generation of a 250m bounding grid over Delhi, execute vectorized spatial joins against thousands of OpenStreetMap polygons, and run KNN interpolation for pollution nodes.
 
-## Attribution
+To visualize the data on our Plotly Dash dashboard, we load the final aggregated CSV that serves as the single source of truth for the city grid.
 
-- **WorldPop** — CC BY 4.0, University of Southampton
-- **ESA WorldCover** — CC BY 4.0, ESA / Vito
-- **OpenStreetMap** — ODbL, OpenStreetMap contributors
-- **Google Open Buildings** — CC BY 4.0 / ODbL, Google
-- **MODIS LST** — NASA/USGS, public domain
-- **CPCB Air Quality** — Government of India Open Government Data (OGD)
+## Technologies
+- Python (Jupyter, Pandas, Geopandas, Scipy, Sklearn, Rasterio, Osmnx)
+- Plotly Dash for Frontend Visualization
+- OpenStreetMap / ESA WorldCover / NASA MODIS / CPCB
+- GitHub for Version Control
+
+## Accomplishments that we're proud of
+The main accomplishments were around data preprocessing and optimization. We heavily refactored the original algorithms to use vectorized `gpd.sjoin` and advanced indexing. We really had to dig into the details of coordinate reference systems (CRS) to perfectly project satellite raster data and vector polygons onto a unified Haversine grid.
+
+There was also a lot of effort that went into optimizing the code so we could process at higher resolutions significantly faster—what used to take $O(N^2)$ time looping over map features was reduced to seconds.
+
+Finally, we're proud to deliver a fully open-source, open-data solution tailored for Delhi that can be used flexibly to influence real-world urban planning decision making.
+
+## How to setup and run
+To setup the fundamental CSVs, create a `Data/` directory and place the downloaded rasters (`worldpop_india_2024_100m.tif`, `worldcover_delhi.tif`, `modis_lst_summer_mean.tif`) and vectors (`open_buildings_delhi.gpkg`, `cpcb_stations.csv`) into it. OpenStreetMap data is fetched dynamically via Osmnx.
+
+1. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. **Run Pipeline:**
+   ```bash
+   # Step 1 – build grid and feature CSV
+   python Scripts/build_land_type_csv.py
+   
+   # Step 2 & 3 – generate penultimate and final dataframes
+   jupyter nbconvert --to notebook --execute Notebooks/create_penultimate_df.ipynb
+   jupyter nbconvert --to notebook --execute Notebooks/create_final_df.ipynb
+   ```
+3. **Launch dashboard:**
+   ```bash
+   cd Plotly_Dash_App
+   python app.py
+   ```
+The dashboard runs at `http://127.0.0.1:8050`. To edit the green space score function, enter the `helpers.py` script where the core logic resides.
+
+## Built With
+- dash
+- geopandas
+- pandas
+- plotly
+- python
+- scikit-learn
+- jupyter
+- rasterio
+- osmnx
