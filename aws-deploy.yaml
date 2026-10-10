@@ -14,7 +14,7 @@ Resources:
           yum install -y git python3 python3-pip
           git clone https://github.com/uselessdevloper/paryavaran.git /home/ec2-user/paryavaran
           cd /home/ec2-user/paryavaran
-          python3 -m pip install -r requirements.txt
+          python3 -m pip install -r requirements.txt --ignore-installed
           cd Plotly_Dash_App
           python3 -m gunicorn app:server -b 0.0.0.0:80 --daemon
   
