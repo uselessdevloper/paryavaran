@@ -16,7 +16,7 @@ Resources:
           cd /home/ec2-user/paryavaran
           python3 -m pip install -r requirements.txt
           cd Plotly_Dash_App
-          gunicorn app:server -b 0.0.0.0:80 --daemon
+          python3 -m gunicorn app:server -b 0.0.0.0:80 --daemon
   
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
