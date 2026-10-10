@@ -15,6 +15,10 @@ The final dashboard aggregates the underlying data into a **Priority Score** tha
 <div align="center">
   <img src="Dashboard_Images/Priority_Score.png" alt="Priority Score Map" width="100%">
 </div>
+<br>
+<div align="center">
+  <img src="Dashboard_Images/Zoomed_Priority_Score.png" alt="Priority Score Map (Zoomed)" width="100%">
+</div>
 
 The calculation of the score considers multiple weighted components:
 - **Population Need (0.25):** Based on WorldPop India 2024 raster aggregations.
@@ -22,11 +26,18 @@ The calculation of the score considers multiple weighted components:
   <img src="Dashboard_Images/Population_Density.png" alt="Population Density" width="100%">
 </div>
 - **Greenspace Deficit (0.20):** Based on existing parks from OpenStreetMap (OSM) and ESA WorldCover.
+<div align="center">
+  <img src="Dashboard_Images/Distance_To_Greenspace.png" alt="Distance To Nearest Greenspace" width="100%">
+</div>
 - **Heat Stress (0.20):** Derived from MODIS Summer Mean Land Surface Temperature.
 - **Air Pollution (0.15):** Interpolated from real-time CPCB ground stations (PM2.5, PM10, NO2). The below images of the dashboard air quality scores clearly reflect worse air quality concentrations around the dense centre of Delhi:
 
 <div align="center">
   <img src="Dashboard_Images/Air_Quality_Score.png" alt="Air Quality Map" width="100%">
+</div>
+<br>
+<div align="center">
+  <img src="Dashboard_Images/Zoomed_Air_Quality.png" alt="Air Quality Map (Zoomed)" width="100%">
 </div>
 <br>
 <div align="center">
