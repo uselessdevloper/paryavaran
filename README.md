@@ -10,39 +10,26 @@ Green spaces improve both the environmental and social conditions of cities. Air
 
 We extracted raw data from multiple open sources—ranging from WorldPop demographic estimates to NASA MODIS satellite data and Central Pollution Control Board (CPCB) monitoring stations. We processed them by upsampling to a high enough resolution (250m) that makes the dashboard highly usable by city planners. The resolution itself is a parameter, with distance-weighted k-nearest neighbours (KNN) and vectorized spatial joins enabling high-performance processing across the city grid.
 
-The final dashboard aggregates the underlying data into a **Priority Score** that summarizes where potential greenspaces would most benefit the urban conditions of Delhi. The below image illustrates the dashboard priority score:
+The final dashboard aggregates the underlying data into a **Priority Score** that summarizes where potential greenspaces would most benefit the urban conditions of Delhi. Below is a high-resolution view of the dashboard priority score in the Indira Gandhi International Airport region, showing how the algorithm dynamically highlights critical necessity zones.
 
 <div align="center">
-  <img src="Dashboard_Images/Priority_Score.png" alt="Priority Score Map" width="100%">
-</div>
-<br>
-<div align="center">
   <img src="Dashboard_Images/Zoomed_Priority_Score.png" alt="Priority Score Map (Zoomed)" width="100%">
+  <p><em><strong>Figure 1. Priority Score Map:</strong> Deep blue regions highlight optimal locations for new green infrastructure based on heavily weighted environmental and demographic urgency.</em></p>
 </div>
 
 The calculation of the score considers multiple weighted components:
 - **Population Need (0.25):** Based on WorldPop India 2024 raster aggregations.
-<div align="center">
-  <img src="Dashboard_Images/Population_Density.png" alt="Population Density" width="100%">
-</div>
 - **Greenspace Deficit (0.20):** Based on existing parks from OpenStreetMap (OSM) and ESA WorldCover.
 <div align="center">
   <img src="Dashboard_Images/Distance_To_Greenspace.png" alt="Distance To Nearest Greenspace" width="100%">
+  <p><em><strong>Figure 2. Greenspace Deficit Map:</strong> Red/Orange areas indicate neighborhoods that are severely geographically isolated from existing parks.</em></p>
 </div>
 - **Heat Stress (0.20):** Derived from MODIS Summer Mean Land Surface Temperature.
-- **Air Pollution (0.15):** Interpolated from real-time CPCB ground stations (PM2.5, PM10, NO2). The below images of the dashboard air quality scores clearly reflect worse air quality concentrations around the dense centre of Delhi:
+- **Air Pollution (0.15):** Interpolated from real-time CPCB ground stations (PM2.5, PM10, NO2). The below image of the dashboard air quality scores clearly reflects worse air quality concentrations around the dense centre of Delhi:
 
 <div align="center">
-  <img src="Dashboard_Images/Air_Quality_Score.png" alt="Air Quality Map" width="100%">
-</div>
-<br>
-<div align="center">
   <img src="Dashboard_Images/Zoomed_Air_Quality.png" alt="Air Quality Map (Zoomed)" width="100%">
-</div>
-<br>
-<div align="center">
-  <img src="Dashboard_Images/PM25.png" alt="PM2.5 Map" width="48%">
-  <img src="Dashboard_Images/NO2.png" alt="NO2 Map" width="48%">
+  <p><em><strong>Figure 3. Air Quality Deficit Map:</strong> Displays spatial interpolation of CPCB nodes using K-Nearest Neighbor algorithms, highlighting micro-zones with dangerous PM2.5 and NO2 concentrations.</em></p>
 </div>
 
 - **Accessibility Deficit (0.10):** Distance to nearest roads.
