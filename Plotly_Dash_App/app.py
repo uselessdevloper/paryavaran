@@ -17,6 +17,7 @@ if ROOT not in sys.path:
 
 app = Dash(__name__)
 app.title = "Paryavaran – Delhi Greenspace Dashboard"
+server = app.server
 
 # ── Load data ─────────────────────────────────────────────────────────────────
 df = pd.read_csv(ROOT + "/final_df.csv", engine="c")
