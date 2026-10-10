@@ -35,3 +35,4 @@ python-dotenv==0.20.0
 # ── Removed (UK/cloud-specific, no longer needed) ─────────────────────────────
 # xarray, s3fs, netcdf4, h5netcdf, zarr  – remove if not processing NetCDF data
 # sagemaker                               – remove if not using AWS SageMaker
+gunicorn==21.2.0

@@ -14,7 +14,6 @@ Data/*.prj
 Data/*.shx
 
 # Generated CSVs (regenerate via pipeline)
-final_df.csv
 penultimate_df.csv
 land_type_025.csv
 points_df_025.csv
