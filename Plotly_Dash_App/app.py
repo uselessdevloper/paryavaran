@@ -11,6 +11,7 @@ import plotly.figure_factory as ff
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent.as_posix()
 if ROOT not in sys.path:
     sys.path.append(ROOT)

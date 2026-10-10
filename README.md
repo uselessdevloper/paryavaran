@@ -1,5 +1,7 @@
 # Paryavaran — Urban Greenspace Suitability Dashboard (Delhi, India)
 
+> 🌐 **Live Web Application:** [http://ec2-3-90-145-247.compute-1.amazonaws.com](http://ec2-3-90-145-247.compute-1.amazonaws.com)
+
 ## Inspiration
 Living in cities, we appreciate the importance of green space in our areas, especially as rapid urbanization continues. However, since neither of us are city planners or subject matter experts, we thought it would be most valuable to develop a flexible tool. That way a city planner can integrate other relevant datasets and keep it updated with recent readings to dynamically plan green infrastructure where it's needed most.
 
@@ -71,6 +73,7 @@ To visualize the data on our Plotly Dash dashboard, we load the final aggregated
 
 ## AWS Architecture & Cloud Deployment
 To ensure the dashboard is robustly available for judges and end-users, we deployed the Paryavaran platform on **Amazon Web Services (AWS)**.
+- **🌐 Live Deployment URL:** [http://ec2-3-90-145-247.compute-1.amazonaws.com](http://ec2-3-90-145-247.compute-1.amazonaws.com)
 - **Amazon SageMaker:** Utilized for Exploratory Data Analysis (EDA), spatial preprocessing, and scaling the machine learning pipeline (K-Nearest Neighbors distance matrix calculations) using high-performance compute notebooks.
 - **AWS CloudFormation:** Used as Infrastructure-as-Code (IaC) to automatically provision the cloud networking rules and instances.
 - **Amazon EC2 (t3.medium):** The live Plotly Dash web application is hosted on an EC2 instance, utilizing a `gunicorn` production WSGI server to serve the high-resolution geospatial vectors dynamically to users.
