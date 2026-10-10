@@ -103,6 +103,74 @@ all_options = (
     + [{"label": f"🗺️ {c}", "value": c} for c in BINARY_COLS]
 )
 
+# ── Build Graph Function ──────────────────────────────────────────────────────
+def build_graph(column_chosen="Priority Score"):
+    try:
+        if column_chosen is None:
+            column_chosen = "Priority Score"
+
+        center = dict(lat=CITY_LAT, lon=CITY_LON)
+
+        if column_chosen == "Population Density":
+            fig = px.density_mapbox(
+                df, lat="Latitude", lon="Longitude", z=column_chosen,
+                radius=15, opacity=0.45,
+                center=center, zoom=DEFAULT_ZOOM,
+                mapbox_style="open-street-map",
+                color_continuous_scale="Turbo",
+            )
+
+        elif column_chosen in BINARY_COLS:
+            fig = px.scatter_mapbox(
+                df, lat="Latitude", lon="Longitude",
+                opacity=0.30, color=column_chosen,
+                zoom=DEFAULT_ZOOM, mapbox_style="open-street-map",
+                color_continuous_scale=["white", "#2ecc71"],
+            )
+
+        elif column_chosen in ("Priority Score", "Distance to Nearest Green Space (km)"):
+            fig = px.scatter_mapbox(
+                df, lat="Latitude", lon="Longitude",
+                size=column_chosen, opacity=0.35,
+                zoom=DEFAULT_ZOOM + 0.25, mapbox_style="open-street-map",
+                color=column_chosen, color_continuous_scale="Turbo",
+            )
+
+        else:
+            # Hexbin for continuous overlays (AQ, heat, PM2.5, etc.)
+            fig = ff.create_hexbin_mapbox(
+                df, lat="Latitude", lon="Longitude",
+                color=column_chosen, nx_hexagon=120,
+                opacity=0.30, center=center,
+                mapbox_style="open-street-map",
+                zoom=DEFAULT_ZOOM,
+                color_continuous_scale="Turbo",
+                labels={"color": column_chosen},
+                agg_func=np.mean,
+            )
+            fig.update_traces(marker_line_width=0)
+
+        fig.update_layout(
+            autosize=True,
+            height=820,
+            margin=dict(l=20, r=20, t=20, b=20),
+        )
+        if hasattr(fig.layout, "coloraxis") and fig.layout.coloraxis and hasattr(fig.layout.coloraxis, "colorbar") and fig.layout.coloraxis.colorbar:
+            fig.layout.coloraxis.colorbar.title = ""
+        fig.update_mapboxes(pitch=40)
+        return fig
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        err_fig = px.scatter()
+        err_fig.add_annotation(
+            text=f"Error rendering map: {e}",
+            showarrow=False,
+            font=dict(size=16, color="red")
+        )
+        return err_fig
+
+
 # ── Layout ────────────────────────────────────────────────────────────────────
 app.layout = html.Div(
     children=[
@@ -162,7 +230,7 @@ app.layout = html.Div(
         ),
 
         html.Div(
-            [dcc.Graph(id="our_graph")],
+            [dcc.Graph(id="our_graph", figure=build_graph("Priority Score"))],
             className="fifteen columns",
         ),
 
@@ -186,59 +254,9 @@ app.layout = html.Div(
     Output(component_id="our_graph", component_property="figure"),
     [Input(component_id="my_dropdown", component_property="value")],
 )
-def build_graph(column_chosen):
-    if column_chosen is None:
-        column_chosen = "Priority Score"
+def update_graph(column_chosen):
+    return build_graph(column_chosen)
 
-    center = dict(lat=CITY_LAT, lon=CITY_LON)
-
-    if column_chosen == "Population Density":
-        fig = px.density_mapbox(
-            df, lat="Latitude", lon="Longitude", z=column_chosen,
-            radius=15, opacity=0.45,
-            center=center, zoom=DEFAULT_ZOOM,
-            mapbox_style="open-street-map",
-            color_continuous_scale="Turbo",
-        )
-
-    elif column_chosen in BINARY_COLS:
-        fig = px.scatter_mapbox(
-            df, lat="Latitude", lon="Longitude",
-            opacity=0.30, color=column_chosen,
-            zoom=DEFAULT_ZOOM, mapbox_style="open-street-map",
-            color_continuous_scale=["white", "#2ecc71"],
-        )
-
-    elif column_chosen in ("Priority Score", "Distance to Nearest Green Space (km)"):
-        fig = px.scatter_mapbox(
-            df, lat="Latitude", lon="Longitude",
-            size=column_chosen, opacity=0.35,
-            zoom=DEFAULT_ZOOM + 0.25, mapbox_style="open-street-map",
-            color=column_chosen, color_continuous_scale="Turbo",
-        )
-
-    else:
-        # Hexbin for continuous overlays (AQ, heat, PM2.5, etc.)
-        fig = ff.create_hexbin_mapbox(
-            df, lat="Latitude", lon="Longitude",
-            color=column_chosen, nx_hexagon=120,
-            opacity=0.30, center=center,
-            mapbox_style="open-street-map",
-            zoom=DEFAULT_ZOOM,
-            color_continuous_scale="Turbo",
-            labels={"color": column_chosen},
-            agg_func=np.mean,
-        )
-        fig.update_traces(marker_line_width=0)
-
-    fig.update_layout(
-        autosize=True,
-        height=820,
-        margin=dict(l=20, r=20, t=20, b=20),
-    )
-    fig.layout.coloraxis.colorbar.title = ""
-    fig.update_mapboxes(pitch=40)
-    return fig
 
 
 if __name__ == "__main__":
