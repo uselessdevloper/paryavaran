@@ -1,38 +1,36 @@
 # ── Core framework ────────────────────────────────────────────────────────────
 dash==2.6.1
 plotly==5.10.0
-pandas==1.5.3
-numpy==1.23.2
+pandas>=1.5.0
+numpy>=1.23.0
 
 # ── Spatial / GIS ─────────────────────────────────────────────────────────────
-haversine==2.6.0
-geopandas==0.11.1
-shapely==1.8.4
-pyproj==3.4.0
-rasterio==1.3.2        # reading GeoTIFF rasters (WorldPop, WorldCover, MODIS)
-rasterstats==0.17.0    # zonal statistics for raster → grid aggregation
-osmnx==1.3.0           # OpenStreetMap network / feature download
-fiona==1.8.22          # vector I/O used by geopandas
+haversine
+geopandas>=0.12
+shapely>=1.8
+pyproj>=3.3
+rasterio>=1.3
+rasterstats>=0.17
+osmnx==1.3.0
+fiona>=1.8
 
 # ── Machine learning / stats ──────────────────────────────────────────────────
-scikit-learn==1.1.2
-scipy==1.9.1           # KNN distance weighting, spatial interpolation
+scikit-learn>=1.1
+scipy>=1.9
 
 # ── Parallelisation ───────────────────────────────────────────────────────────
-multiprocess==0.70.13
-tqdm==4.64.0
+multiprocess
+tqdm
 
-# ── AWS / cloud (optional, keep for S3 compatibility) ─────────────────────────
-boto3==1.24.12
+# ── AWS / cloud ───────────────────────────────────────────────────────────────
+boto3
 
 # ── Visualisation helpers ──────────────────────────────────────────────────────
-matplotlib==3.5.3
-contextily==1.2.0
+matplotlib>=3.5
+contextily>=1.2
 
 # ── Config ────────────────────────────────────────────────────────────────────
-python-dotenv==0.20.0
+python-dotenv>=0.20.0
 
-# ── Removed (UK/cloud-specific, no longer needed) ─────────────────────────────
-# xarray, s3fs, netcdf4, h5netcdf, zarr  – remove if not processing NetCDF data
-# sagemaker                               – remove if not using AWS SageMaker
+# ── Server ────────────────────────────────────────────────────────────────────
 gunicorn==21.2.0
