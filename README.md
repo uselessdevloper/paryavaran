@@ -67,10 +67,11 @@ To visualize the data on our Plotly Dash dashboard, we load the final aggregated
 - Plotly Dash for Frontend Visualization
 - OpenStreetMap / ESA WorldCover / NASA MODIS / CPCB
 - GitHub for Version Control
-- AWS EC2 & AWS CloudFormation for Deployment
+- AWS EC2, AWS CloudFormation, & Amazon SageMaker
 
-## Cloud Deployment (AWS)
+## AWS Architecture & Cloud Deployment
 To ensure the dashboard is robustly available for judges and end-users, we deployed the Paryavaran platform on **Amazon Web Services (AWS)**.
+- **Amazon SageMaker:** Utilized for Exploratory Data Analysis (EDA), spatial preprocessing, and scaling the machine learning pipeline (K-Nearest Neighbors distance matrix calculations) using high-performance compute notebooks.
 - **AWS CloudFormation:** Used as Infrastructure-as-Code (IaC) to automatically provision the cloud networking rules and instances.
 - **Amazon EC2 (t3.medium):** The live Plotly Dash web application is hosted on an EC2 instance, utilizing a `gunicorn` production WSGI server to serve the high-resolution geospatial vectors dynamically to users.
 
@@ -116,3 +117,4 @@ The dashboard runs at `http://127.0.0.1:8050`. To edit the green space score fun
 - osmnx
 - aws-ec2
 - aws-cloudformation
+- amazon-sagemaker
