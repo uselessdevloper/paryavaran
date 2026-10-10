@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  ParyavaranInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.medium
+      ImageId: resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+      SecurityGroupIds:
+        - !Ref InstanceSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          yum install -y git python3 python3-pip
+          git clone https://github.com/uselessdevloper/paryavaran.git /home/ec2-user/paryavaran
+          cd /home/ec2-user/paryavaran
+          python3 -m pip install -r requirements.txt
+          cd Plotly_Dash_App
+          gunicorn app:server -b 0.0.0.0:80 --daemon
+  
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+Outputs:
+  WebsiteURL:
+    Description: URL of the Paryavaran Dashboard
+    Value: !Join ['', ['http://', !GetAtt ParyavaranInstance.PublicDnsName]]
