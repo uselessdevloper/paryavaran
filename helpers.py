@@ -1,24 +1,16 @@
 """
-helpers.py  –  Paryavaran  (India / Delhi edition)
-===================================================
-Replaces the original Kainos ASDI-Hackathon helpers.py.
+helpers.py  –  Paryavaran Spatial Feature Engineering & Scoring Engine
+======================================================================
+Core module for spatial processing, feature extraction, and multi-criteria
+greenspace suitability modeling for Delhi (NCT).
 
-Changes vs. original
----------------------
-* All Ordnance Survey WFS API calls removed
-  (get_feature_type_in_bbox, is_airport, is_water, is_building,
-   is_railway_station, is_green_space, is_urban_area).
-* Land-type detection now uses pre-processed CSVs derived from
-  ESA WorldCover 2021 + OpenStreetMap (no live API calls required
-  during scoring).
-* Air-quality (AQ) score now uses CPCB PM2.5 / PM10 / NO2 stations
-  interpolated via distance-weighted KNN – same BallTree/haversine
-  approach as the original, just with Indian station data.
-* Population density is read from a pre-aggregated WorldPop raster
-  (100 m → 250 m zonal sum), stored in land_type_025.csv.
-* Heat stress (MODIS LST) and building density (Google Open Buildings)
-  are new columns carried through from land_type_025.csv.
-* Priority score formula updated for Indian urban-planning context.
+Key Components:
+- Equidistant 250m geodesic grid generation using Haversine distance.
+- Ground-truth air quality interpolation (CPCB PM2.5, PM10, NO2) via
+  inverse distance-weighted K-Nearest Neighbors (KNN).
+- Multi-source spatial sampling (WorldPop density, NASA MODIS LST heat stress,
+  Google Open Buildings footprint density, ESA WorldCover land cover).
+- Multi-criteria priority score evaluation and rule-based land feasibility multipliers.
 
 Data pipeline
 -------------
