@@ -1,0 +1,151 @@
+[
+  {
+    "tile_id": "ZONE_OKHLA_BARE",
+    "timestamp": "2026-10-20T07:50:37.394329Z",
+    "decision_branch": "BRANCH_MIYAWAKI_MICRO_FOREST",
+    "initial_score": 0.65,
+    "adjusted_score": 0.91,
+    "recommended_action": "Prime Miyawaki Site Approved: Deploy Dense Micro-Forest (87,705 saplings).",
+    "tools_invoked": [
+      "opencv5::analyze_aerial_tile",
+      "landscape::generate_miyawaki_planting_blueprint",
+      "nursery::reserve_native_species_saplings"
+    ],
+    "perception_metrics": {
+      "canopy_pct": 0.61,
+      "bare_ground_pct": 46.43,
+      "impervious_pct": 52.959999999999994,
+      "water_pct": 0.0,
+      "edge_density": 0.0046,
+      "largest_parcel_sqm": 29235.0,
+      "dominant_class": "Built Urban"
+    },
+    "reasoning_trace": [
+      "Initiating visual perception on tile ZONE_OKHLA_BARE (28.5355, 77.2732).",
+      "OpenCV 5 extracted visual evidence: Canopy=0.6%, BareGround=46.4%, Impervious=53.0%, LargestParcel=29235 m\u00b2.",
+      "OpenCV contour analysis identified continuous unpaved bare soil parcel of 29,235 m\u00b2. Escalating to high-priority micro-forest intervention."
+    ],
+    "action_payload": {
+      "latitude": 28.5355,
+      "longitude": 77.2732,
+      "canopy_detected_pct": 0.61,
+      "bare_ground_pct": 46.43,
+      "estimated_sapling_capacity": 87705,
+      "recommended_species": [
+        "Neem",
+        "Peepal",
+        "Amaltas",
+        "Jamun",
+        "Dhau"
+      ],
+      "parcel_area_sqm": 29235.0
+    },
+    "inspection_image": "/Users/utkarshsinha/Downloads/Paryavaran/vision_engine/output_inspections/inspected_ZONE_OKHLA_BARE.png"
+  },
+  {
+    "tile_id": "ZONE_CP_DENSE",
+    "timestamp": "2026-10-20T07:50:37.410784Z",
+    "decision_branch": "BRANCH_ROOFTOP_CORRIDOR",
+    "initial_score": 0.72,
+    "adjusted_score": 0.828,
+    "recommended_action": "Ground Space Constrained: Trigger Rooftop Garden & Vertical Greening Corridor Program.",
+    "tools_invoked": [
+      "opencv5::analyze_aerial_tile",
+      "urban_planning::initiate_rooftop_subsidy_program",
+      "gis::extract_building_rooftop_geometries"
+    ],
+    "perception_metrics": {
+      "canopy_pct": 3.3099999999999996,
+      "bare_ground_pct": 4.9399999999999995,
+      "impervious_pct": 91.75,
+      "water_pct": 0.0,
+      "edge_density": 0.0786,
+      "largest_parcel_sqm": 704.0,
+      "dominant_class": "Built Urban"
+    },
+    "reasoning_trace": [
+      "Initiating visual perception on tile ZONE_CP_DENSE (28.6315, 77.2167).",
+      "OpenCV 5 extracted visual evidence: Canopy=3.3%, BareGround=4.9%, Impervious=91.8%, LargestParcel=704 m\u00b2.",
+      "OpenCV visual analysis detected 91.8% impervious concrete with <10% bare soil. Ground planting impossible. Dynamically re-routing strategy to structural rooftops."
+    ],
+    "action_payload": {
+      "latitude": 28.6315,
+      "longitude": 77.2167,
+      "canopy_detected_pct": 3.3099999999999996,
+      "bare_ground_pct": 4.9399999999999995,
+      "intervention_mode": "Green Roofs & Vertical Living Walls",
+      "incentive_tier": "Municipal Property Tax Rebate Eligible"
+    },
+    "inspection_image": "/Users/utkarshsinha/Downloads/Paryavaran/vision_engine/output_inspections/inspected_ZONE_CP_DENSE.png"
+  },
+  {
+    "tile_id": "ZONE_RIDGE_CANOPY",
+    "timestamp": "2026-10-20T07:50:37.428822Z",
+    "decision_branch": "BRANCH_CANOPY_PROTECTION",
+    "initial_score": 0.6,
+    "adjusted_score": 0.27,
+    "recommended_action": "Canopy Verified: Discrepancy Resolved. Shift from Afforestation to Canopy Protection.",
+    "tools_invoked": [
+      "opencv5::analyze_aerial_tile",
+      "forestry::issue_canopy_conservation_order",
+      "monitoring::schedule_quarterly_satellite_audit"
+    ],
+    "perception_metrics": {
+      "canopy_pct": 98.22999999999999,
+      "bare_ground_pct": 0.0,
+      "impervious_pct": 1.77,
+      "water_pct": 0.0,
+      "edge_density": 0.033,
+      "largest_parcel_sqm": 0.0,
+      "dominant_class": "Dense Canopy"
+    },
+    "reasoning_trace": [
+      "Initiating visual perception on tile ZONE_RIDGE_CANOPY (28.6012, 77.1850).",
+      "OpenCV 5 extracted visual evidence: Canopy=98.2%, BareGround=0.0%, Impervious=1.8%, LargestParcel=0 m\u00b2.",
+      "Visual inspection discovered 98.2% existing healthy tree canopy missed by low-resolution rasters. Re-routing action to conservation monitoring."
+    ],
+    "action_payload": {
+      "latitude": 28.6012,
+      "longitude": 77.185,
+      "canopy_detected_pct": 98.22999999999999,
+      "bare_ground_pct": 0.0,
+      "protection_tier": "Existing Urban Canopy",
+      "re_inspection_interval_days": 90
+    },
+    "inspection_image": "/Users/utkarshsinha/Downloads/Paryavaran/vision_engine/output_inspections/inspected_ZONE_RIDGE_CANOPY.png"
+  },
+  {
+    "tile_id": "ZONE_YAMUNA_RIVER",
+    "timestamp": "2026-10-20T07:50:37.444838Z",
+    "decision_branch": "BRANCH_WATER_EXCLUSION",
+    "initial_score": 0.55,
+    "adjusted_score": 0.0,
+    "recommended_action": "Enforce Strict Ecological Water Body Preservation; Exclude Ground Planting.",
+    "tools_invoked": [
+      "opencv5::analyze_aerial_tile",
+      "planning::enforce_water_buffer_ordinance"
+    ],
+    "perception_metrics": {
+      "canopy_pct": 6.08,
+      "bare_ground_pct": 0.91,
+      "impervious_pct": 37.26,
+      "water_pct": 55.75,
+      "edge_density": 0.0067,
+      "largest_parcel_sqm": 0.0,
+      "dominant_class": "Water Body"
+    },
+    "reasoning_trace": [
+      "Initiating visual perception on tile ZONE_YAMUNA_RIVER (28.6450, 77.2580).",
+      "OpenCV 5 extracted visual evidence: Canopy=6.1%, BareGround=0.9%, Impervious=37.3%, LargestParcel=0 m\u00b2.",
+      "Visual evidence confirms active surface water bodies (>=15%). Zeroing out afforestation score."
+    ],
+    "action_payload": {
+      "latitude": 28.645,
+      "longitude": 77.258,
+      "canopy_detected_pct": 6.08,
+      "bare_ground_pct": 0.91,
+      "protection_type": "Riverine / Wetland Sanctuary"
+    },
+    "inspection_image": "/Users/utkarshsinha/Downloads/Paryavaran/vision_engine/output_inspections/inspected_ZONE_YAMUNA_RIVER.png"
+  }
+]

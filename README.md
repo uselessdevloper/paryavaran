@@ -13,9 +13,11 @@
 4. **6-Component Multi-Criteria Suitability Model:** Formulated an urban greenspace suitability equation evaluating heat stress, particulate air pollution, demographic exposure, greenspace deficit, road accessibility, and structural density.
 5. **Rule-Based Land Feasibility & Civic Zoning Multipliers:** Implemented realistic planning constraints that strictly exclude airport runways and water bodies ($0.0\times$), penalize hospitals and schools, and actively reward bare/vacant urban land ($1.4\times$).
 6. **Vectorized High-Performance Geospatial Engine:** Re-architected spatial intersections with `geopandas.sjoin` and Scikit-Learn `BallTree` in Haversine metric space, reducing grid processing time across 42,300 zones from over 4 hours to under 90 seconds.
-7. **Cloud-Native AWS Production Deployment:** Created an automated AWS CloudFormation template (`aws-deploy.yaml`) utilizing SSM Parameter Store for dynamic AMI resolution, running an auto-restarting Systemd daemon and Gunicorn WSGI server on Amazon Linux 2023.
+7. **Agentic Computer Vision with OpenCV 5:** Engineered a multi-step *Perception-Decision-Action* loop combining CLAHE atmospheric dehazing (`cv2.createCLAHE`), dual-space canopy extraction (HSV + ExG), morphological parcel contour analysis (`cv2.findContours`), and structural Canny edge density to dynamically override macro tabular estimates and dispatch automated municipal action plans.
+8. **Cloud-Native AWS Production Deployment:** Created an automated AWS CloudFormation template (`aws-deploy.yaml`) utilizing SSM Parameter Store for dynamic AMI resolution, running an auto-restarting Systemd daemon and Gunicorn WSGI server on Amazon Linux 2023.
 
 ---
+
 
 ## 💡 Inspiration
 Over **56% of the world’s population lives in cities today**, a figure projected to approach **70% by 2050**. Few places on Earth illustrate the acute tensions of hyper-urbanization more starkly than **Delhi (National Capital Territory)**. 
@@ -129,28 +131,88 @@ Paryavaran is deployed on **Amazon Web Services (AWS)** using an automated, repr
 
 ---
 
+## 👁️ OpenCV 5 & Agentic Vision Architecture
+
+Paryavaran integrates an autonomous **OpenCV 5 Agentic Vision Engine** that bridges high-resolution optical aerial sensing with autonomous municipal planning decisions through a closed **Perception-Decision-Action loop**:
+
+```
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │                      PERCEPTION (OpenCV 5 Engine)                      │
+ │                                                                        │
+ │  Input Aerial Tile (250m) ──► CLAHE Dehazing (LAB color space)        │
+ │                                ├──► Dual-Space Canopy (HSV + ExG)      │
+ │                                ├──► Bare Ground & Soil Segmentation    │
+ │                                ├──► Water Body Spectral Masking        │
+ │                                ├──► Structural Canny Edge Density      │
+ │                                └──► Morphological Contour Parcels      │
+ └───────────────────────────────────┬────────────────────────────────────┘
+                                     │ Ground-Truth Visual Feature Vector
+                                     ▼
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │                       DECISION (Autonomous Agent)                      │
+ │                                                                        │
+ │  IF Bare Ground >= 15% AND Parcel >= 5,000 m²:                         │
+ │      ──► BRANCH_MIYAWAKI_MICRO_FOREST (Score boost +40%)               │
+ │  ELIF Impervious >= 80% AND Bare Ground < 10%:                         │
+ │      ──► BRANCH_ROOFTOP_CORRIDOR (Rooftop greening + vertical walls)   │
+ │  ELIF Canopy >= 40% (Discrepancy with low-res raster):                 │
+ │      ──► BRANCH_CANOPY_PROTECTION (Prevent wasteful budget allocation) │
+ │  ELIF Water Body >= 15%:                                               │
+ │      ──► BRANCH_WATER_EXCLUSION (Hard clamp score to 0.0)              │
+ └───────────────────────────────────┬────────────────────────────────────┘
+                                     │ Adaptive Strategy & Policy
+                                     ▼
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │                        ACTION (Automated Dispatch)                     │
+ │                                                                        │
+ │  • Generate Miyawaki planting blueprint with calculated sapling quota  │
+ │  • Reserve native drought-resilient saplings (Neem, Peepal, Amaltas)   │
+ │  • Trigger municipal rooftop subsidy & living wall tax incentives      │
+ │  • Schedule quarterly satellite audit for protected canopy corridors   │
+ │  • Render visual overlays with cv2.drawContours & annotated telemetry  │
+ └────────────────────────────────────────────────────────────────────────┘
+```
+
+### Key Computer Vision Modules (`vision_engine/opencv_analyzer.py`)
+1. **Atmospheric Contrast Enhancement:** Uses `cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))` on the Luminance channel in LAB space, eliminating Delhi's particulate smog haze before feature extraction.
+2. **Dual-Space Canopy Extraction:** Combines HSV color thresholding (`cv2.inRange`) with the Normalized Excess Green Index ($\text{ExG} = 2G - R - B$) to isolate tree crowns and eliminate asphalt shadow false positives.
+3. **Continuous Soil Parcel Segmentation:** Identifies plantable ground via HSV bounds and applies `cv2.findContours(cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)` to compute exact metric parcel areas ($m^2$).
+4. **Structural Density Extraction:** Runs `cv2.Canny` across high-frequency architectural edges to quantify built compaction in congested zones.
+
+---
+
 ## 🛠️ Project Structure & Data Pipeline
 
 ```
 Paryavaran/
-├── LICENSE                       ← Open-source MIT License
-├── aws-deploy.yaml               ← AWS CloudFormation IaC deployment template
-├── requirements.txt              ← Full spatial processing dependencies
-├── requirements-web.txt          ← Lightweight production web dependencies (EC2)
-├── helpers.py                    ← Core feature engineering + scoring formulation
+├── LICENSE                             ← Open-source MIT License
+├── aws-deploy.yaml                     ← AWS CloudFormation IaC deployment template
+├── requirements.txt                    ← Full spatial & OpenCV 5 processing dependencies
+├── requirements-web.txt                ← Lightweight production web dependencies (EC2)
+├── helpers.py                          ← Core feature engineering + scoring formulation
+├── vision_engine/                      ← OpenCV 5 Agentic Vision System
+│   ├── __init__.py                     ← Package exports
+│   ├── opencv_analyzer.py              ← OpenCV 5 CLAHE, HSV, ExG, Canny, and Contours
+│   ├── agentic_vision_loop.py          ← Autonomous Perception-Decision-Action loop
+│   ├── generate_sample_tiles.py        ← High-fidelity Delhi micro-zone tile generator
+│   └── output_inspections/             ← Annotated vision overlays & decision traces JSON
 ├── Enums/
-│   └── land_type.py              ← Land type classification enums
+│   └── land_type.py                    ← Land type classification enums
 ├── Notebooks/
 │   ├── create_penultimate_df.ipynb
 │   └── create_final_df.ipynb
 ├── Scripts/
-│   └── build_land_type_csv.py    ← Grid generation + raster sampling + OSM joins
+│   ├── build_land_type_csv.py          ← Grid generation + raster sampling + OSM joins
+│   └── run_agentic_vision.py           ← CLI demonstration runner for Agentic Vision
 ├── Plotly_Dash_App/
-│   └── app.py                    ← Interactive Dash web application
-├── Dashboard_Images/             ← High-resolution dashboard screenshots
-├── final_df.csv                  ← Pre-computed scored dataset (single source of truth)
-└── points_df_025.csv             ← 250m Delhi grid coordinates
+│   └── app.py                          ← Interactive Dash app with OpenCV 5 Inspector
+├── tests/
+│   └── test_opencv_vision.py           ← Pytest test suite for OpenCV 5 pipeline
+├── Dashboard_Images/                   ← High-resolution dashboard screenshots
+├── final_df.csv                        ← Pre-computed scored dataset (single source of truth)
+└── points_df_025.csv                   ← 250m Delhi grid coordinates
 ```
+
 
 ---
 
@@ -182,11 +244,18 @@ jupyter nbconvert --to notebook --execute Notebooks/create_penultimate_df.ipynb
 # Step 3: Compute priority scores and feasibility multipliers
 jupyter nbconvert --to notebook --execute Notebooks/create_final_df.ipynb
 
-# Step 4: Launch local dashboard
+# Step 4: Run OpenCV 5 Agentic Vision Engine (CLI Demonstration)
+python Scripts/run_agentic_vision.py
+
+# Step 5: Run Automated OpenCV 5 Test Suite
+pytest tests/test_opencv_vision.py
+
+# Step 6: Launch local dashboard with OpenCV 5 Inspector
 cd Plotly_Dash_App
 python app.py
 ```
 Visit `http://127.0.0.1:8050` in your browser.
+
 
 ---
 

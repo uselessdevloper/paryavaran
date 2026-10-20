@@ -20,3 +20,8 @@ points_df_025.csv
 
 # London/UK legacy pickles — do not reuse
 Pickles/*.pkl
+
+# OS & Caches
+cache/
+.pytest_cache/
+*/__pycache__/

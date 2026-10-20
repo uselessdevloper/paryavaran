@@ -25,6 +25,9 @@ tqdm==4.64.0
 # ── AWS / cloud ───────────────────────────────────────────────────────────────
 boto3==1.24.12
 
+# ── Computer vision / agentic perception (OpenCV 5) ──────────────────────────
+opencv-python-headless>=4.10.0
+
 # ── Visualisation helpers ──────────────────────────────────────────────────────
 matplotlib==3.5.3
 contextily==1.2.0
@@ -34,3 +37,4 @@ python-dotenv==0.20.0
 
 # ── Server ────────────────────────────────────────────────────────────────────
 gunicorn==21.2.0
+
